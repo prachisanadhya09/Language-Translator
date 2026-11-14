@@ -1,64 +1,34 @@
 
 import streamlit as st
+from deep_translator import GoogleTranslator
+
+st.set_page_config(page_title="Language Translator")
 
 st.title("🌐 Language Translator")
+st.write("Translate complete sentences and paragraphs.")
 
 text = st.text_area("Enter your text here:")
 
-from_language = st.selectbox(
-    "From Language",
-    ["English", "Hindi"]
-)
+source = st.selectbox("From Language", ["English", "Hindi"])
+target = st.selectbox("To Language", ["Hindi", "English"])
 
-to_language = st.selectbox(
-    "To Language",
-    ["Hindi", "English"]
-)
-
-english_to_hindi = {
-    "hello": "नमस्ते",
-    "how are you": "आप कैसे हैं?",
-    "good morning": "सुप्रभात",
-    "thank you": "धन्यवाद",
-    "good night": "शुभ रात्रि",
-    "welcome": "स्वागत है",
-    "goodbye": "अलविदा",
-    "i am fine": "मैं ठीक हूँ"
-}
-
-hindi_to_english = {
-    "नमस्ते": "Hello",
-    "आप कैसे हैं?": "How are you?",
-    "सुप्रभात": "Good morning",
-    "धन्यवाद": "Thank you",
-    "शुभ रात्रि": "Good night",
-    "स्वागत है": "Welcome",
-    "अलविदा": "Goodbye",
-    "मैं ठीक हूँ": "I am fine"
+language_codes = {
+    "English": "en",
+    "Hindi": "hi"
 }
 
 if st.button("Translate"):
-    word = text.strip().lower()
+    if text.strip():
+        try:
+            translated_text = GoogleTranslator(
+                source=language_codes[source],
+                target=language_codes[target]
+            ).translate(text)
 
-    if not word:
-        st.warning("Please enter some text.")
+            st.success("Translation Successful!")
+            st.text_area("Translated Text:", value=translated_text, height=150)
 
-    elif from_language == to_language:
-        st.warning("Please select different languages.")
-
-    elif from_language == "English":
-        result = english_to_hindi.get(word)
-
-        if result:
-            st.success(result)
-        else:
-            st.warning("Translation not available.")
-
+        except Exception:
+            st.error("Translation failed. Please try again.")
     else:
-        result = hindi_to_english.get(text.strip())
-
-        if result:
-            st.success(result)
-        else:
-            st.warning("Translation not available.")
-
+        st.warning("Please enter some text.")
