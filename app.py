@@ -12,17 +12,33 @@ languages = {
     "Japanese": "ja"
 }
 
+common = {
+    ("how are you?", "English", "Hindi"): "आप कैसे हैं?",
+    ("how are you", "English", "Hindi"): "आप कैसे हैं?",
+    ("i am fine", "English", "Hindi"): "मैं ठीक हूँ।",
+    ("hello", "English", "Hindi"): "नमस्ते",
+    ("thank you", "English", "Hindi"): "धन्यवाद",
+    ("good morning", "English", "Hindi"): "सुप्रभात",
+}
+
 text = st.text_area("Enter your text here:")
 
 source = st.selectbox("From language", list(languages.keys()))
 target = st.selectbox("To language", list(languages.keys()))
 
 if st.button("Translate"):
-    if text.strip():
-        if source == target:
-            st.warning("Please select different languages.")
-        elif source == "English" and target == "Hindi" and text.strip().lower() in ["how are you", "how are you?"]:
-            st.success("आप कैसे हैं?")
+    if not text.strip():
+        st.warning("Please enter some text.")
+    elif source == target:
+        st.warning("Please select different languages.")
+    else:
+        key = (text.strip().lower(), source, target)
+
+        if key in common:
+            translated = common[key]
+            st.success("Translation:")
+            st.write(translated)
+            st.code(translated)
         else:
             try:
                 response = requests.get(
@@ -33,19 +49,15 @@ if st.button("Translate"):
                     },
                     timeout=20
                 )
-
                 data = response.json()
 
                 if data.get("responseStatus") == 200:
                     translated = data["responseData"]["translatedText"]
                     st.success("Translation:")
                     st.write(translated)
-
                     st.code(translated)
                 else:
-                    st.error("Translation service is unavailable.")
+                    st.error("Translation unavailable. Try again later.")
 
-            except Exception as e:
-                st.error(f"Translation failed: {e}")
-    else:
-        st.warning("Please enter some text.")
+            except Exception:
+                st.error("Translation failed. Please try again.")
