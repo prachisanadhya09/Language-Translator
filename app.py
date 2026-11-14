@@ -1,34 +1,36 @@
-
 import streamlit as st
 from deep_translator import GoogleTranslator
 
-st.set_page_config(page_title="Language Translator")
-
 st.title("🌐 Language Translator")
-st.write("Translate complete sentences and paragraphs.")
+
+languages = {
+    "English": "en",
+    "Hindi": "hi",
+    "French": "fr",
+    "Spanish": "es",
+    "German": "de",
+    "Japanese": "ja"
+}
 
 text = st.text_area("Enter your text here:")
 
-source = st.selectbox("From Language", ["English", "Hindi"])
-target = st.selectbox("To Language", ["Hindi", "English"])
-
-language_codes = {
-    "English": "en",
-    "Hindi": "hi"
-}
+source = st.selectbox("From language", list(languages.keys()))
+target = st.selectbox("To language", list(languages.keys()))
 
 if st.button("Translate"):
     if text.strip():
         try:
-            translated_text = GoogleTranslator(
-                source=language_codes[source],
-                target=language_codes[target]
+            translated = GoogleTranslator(
+                source=languages[source],
+                target=languages[target]
             ).translate(text)
 
-            st.success("Translation Successful!")
-            st.text_area("Translated Text:", value=translated_text, height=150)
+            st.success("Translation:")
+            st.write(translated)
 
-       except Exception as e:
-    st.error(f"Translation failed: {e}")
+            st.code(translated)
+
+        except Exception as e:
+            st.error(f"Translation failed: {e}")
     else:
         st.warning("Please enter some text.")
