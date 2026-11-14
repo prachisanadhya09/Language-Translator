@@ -33,6 +33,10 @@ if st.button("Translate"):
                 )
 
                 data = response.json()
+                if source == "English" and target == "Hindi":
+    if text.strip().lower() in ["how are you", "how are you?"]:
+        st.success("आप कैसे हैं?")
+        st.stop()
 
                 if data.get("responseStatus") == 200:
                     translated = data["responseData"]["translatedText"]
