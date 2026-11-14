@@ -1,5 +1,5 @@
 import streamlit as st
-from deep_translator import GoogleTranslator
+import requests
 
 st.title("🌐 Language Translator")
 
@@ -19,18 +19,30 @@ target = st.selectbox("To language", list(languages.keys()))
 
 if st.button("Translate"):
     if text.strip():
-        try:
-            translated = GoogleTranslator(
-                source=languages[source],
-                target=languages[target]
-            ).translate(text)
+        if source == target:
+            st.warning("Please select different languages.")
+        else:
+            try:
+                response = requests.get(
+                    "https://api.mymemory.translated.net/get",
+                    params={
+                        "q": text,
+                        "langpair": f"{languages[source]}|{languages[target]}"
+                    },
+                    timeout=20
+                )
 
-            st.success("Translation:")
-            st.write(translated)
+                data = response.json()
 
-            st.code(translated)
+                if data.get("responseStatus") == 200:
+                    translated = data["responseData"]["translatedText"]
+                    st.success("Translation:")
+                    st.write(translated)
+                    st.code(translated)
+                else:
+                    st.error("Translation service is unavailable. Try later.")
 
-        except Exception as e:
-            st.error(f"Translation failed: {e}")
+            except Exception as e:
+                st.error(f"Translation failed: {e}")
     else:
         st.warning("Please enter some text.")
