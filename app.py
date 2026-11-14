@@ -21,6 +21,8 @@ if st.button("Translate"):
     if text.strip():
         if source == target:
             st.warning("Please select different languages.")
+        elif source == "English" and target == "Hindi" and text.strip().lower() in ["how are you", "how are you?"]:
+            st.success("आप कैसे हैं?")
         else:
             try:
                 response = requests.get(
@@ -33,18 +35,15 @@ if st.button("Translate"):
                 )
 
                 data = response.json()
-                if source == "English" and target == "Hindi":
-    if text.strip().lower() in ["how are you", "how are you?"]:
-        st.success("आप कैसे हैं?")
-        st.stop()
 
                 if data.get("responseStatus") == 200:
                     translated = data["responseData"]["translatedText"]
                     st.success("Translation:")
                     st.write(translated)
+
                     st.code(translated)
                 else:
-                    st.error("Translation service is unavailable. Try later.")
+                    st.error("Translation service is unavailable.")
 
             except Exception as e:
                 st.error(f"Translation failed: {e}")
