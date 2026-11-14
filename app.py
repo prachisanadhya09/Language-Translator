@@ -28,7 +28,7 @@ if st.button("Translate"):
             st.success("Translation Successful!")
             st.text_area("Translated Text:", value=translated_text, height=150)
 
-        except Exception:
-            st.error("Translation failed. Please try again.")
+        except Exception as e:
+    st.error(f"Translation failed: {e}")
     else:
         st.warning("Please enter some text.")
